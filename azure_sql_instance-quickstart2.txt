@@ -1,0 +1,168 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "defaultValue": "[resourceGroup().location]",
+            "type": "String",
+            "metadata": {
+                "description": "Location for all resources"
+            }
+        },
+        "vnetResourceName": {
+            "defaultValue": "AZUG-VA-OIR-VNT001",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the vnet"
+            }
+        },
+        "managedInstanceSubnetName": {
+            "defaultValue": "DEV-BE",
+            "type": "String",
+            "metadata": {
+                "description": "Managed Instance Subnet name"
+            }
+        },
+        "sqlManagedInstanceName": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "description": "Name of the Azure SQL Managed Instance - must be globally unique, contain only lowercase letters, numbers and '-'"
+            }
+        },
+        "sqlManagedInstanceAdminLogin": {
+            "type": "String",
+            "metadata": {
+                "description": "Admin user for Managed Instance"
+            }
+        },
+        "sqlManagedInstancePassword": {
+            "type": "SecureString",
+            "metadata": {
+                "description": "Admin user password - must be 16-128 characters, must contain 3 of uppercase, lowercase, numbers and non-alphanumeric characters, and cannot contain all or part of the login name"
+            }
+        },
+        "sqlManagedInstance-storageSizeInGB": {
+            "defaultValue": "32",
+            "type": "String",
+            "metadata": {
+                "description": "Amount of Storage in GB for this instance"
+            }
+        },
+        "sqlManagedInstance-vCores": {
+            "defaultValue": "8",
+            "type": "String",
+            "metadata": {
+                "description": "Number of vCores for this instance"
+            }
+        },
+        "sqlManagedInstance-licenseType": {
+            "defaultValue": "LicenseIncluded",
+            "allowedValues": [
+                "BasePrice",
+                "LicenseIncluded"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Type of license: BasePrice (BYOL) or LicenceIncluded"
+            }
+        },
+        "sqlManagedInstance-skuName": {
+            "defaultValue": "GP_Gen5",
+            "allowedValues": [
+                "GP_Gen4",
+                "GP_Gen5",
+                "BC_Gen4",
+                "BC_Gen5"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "SKU NAME (GP_Gen4, GP_Gen5, BC_GEN5)"
+            }
+        },
+        "sqlManagedInstance-skuEdition": {
+            "defaultValue": "GeneralPurpose",
+            "allowedValues": [
+                "GeneralPurpose",
+                "BusinessCritical"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "SKU Edition (GeneralPurpose, BusinessCritical)"
+            }
+        },
+        "sqlManagedInstance-hardwareFamily": {
+            "defaultValue": "Gen5",
+            "allowedValues": [
+                "Gen4",
+                "Gen5"
+            ],
+            "type": "String",
+            "metadata": {
+                "description": "Hardware family (Gen4, Gen5)"
+            }
+        },
+        "sqlManagedInstance-collation": {
+            "defaultValue": "SQL_Latin1_General_CP1_CI_AS",
+            "type": "String",
+            "metadata": {
+                "description": "SQL Collation"
+            }
+        },
+        "tags": {
+            "defaultValue": {},
+            "type": "Object",
+            "metadata": {
+                "description": "Tags for the Managed Instance SQL resource."
+            }
+        },
+        "vnetAddressRange": {
+            "defaultValue": "10.213.40.0/21",
+            "type": "String",
+            "metadata": {
+                "description": "Address range for the virtual network in CIDR notation"
+            }
+        },
+        "managedInstanceSubnetAddressRange": {
+            "defaultValue": "10.213.42.0/24",
+            "type": "String",
+            "metadata": {
+                "description": "Managed Instance Subnet range"
+            }
+        },
+        "miManagementIps": {
+            "defaultValue": [],
+            "type": "Array",
+            "metadata": {
+                "description": "List of MI management IP ranges"
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Sql/managedInstances",
+            "apiVersion": "2018-06-01-preview",
+            "name": "[parameters('sqlManagedInstanceName')]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "sku": {
+                "name": "[parameters('sqlManagedInstance-skuName')]",
+                "tier": "[parameters('sqlManagedInstance-skuEdition')]"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('sqlManagedInstanceAdminLogin')]",
+                "administratorLoginPassword": "[parameters('sqlManagedInstancePassword')]",
+                "subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('vnetResourceName'),parameters('managedInstanceSubnetName'))]",
+                "storageSizeInGB": "[parameters('sqlManagedInstance-storageSizeInGB')]",
+                "vCores": "[parameters('sqlManagedInstance-vCores')]",
+                "licenseType": "[parameters('sqlManagedInstance-licenseType')]",
+                "hardwareFamily": "[parameters('sqlManagedInstance-hardwareFamily')]",
+                "collation": "[parameters('sqlManagedInstance-collation')]",
+                "publicDataEndpointEnabled": "false"
+            }
+        }
+    ]
+}

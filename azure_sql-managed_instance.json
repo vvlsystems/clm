@@ -1,0 +1,192 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"sqlAdministratorLogin": {
+			"type": "string",
+			"metadata": {
+				"description": "The administrator username of the SQL Server."
+			}
+		},
+		"sqlAdministratorLoginPassword": {
+			"type": "securestring",
+			"metadata": {
+				"description": "The administrator password of the SQL Server."
+			}
+		},
+		"transparentDataEncryption": {
+			"type": "string",
+			"allowedValues": [
+				"Enabled",
+				"Disabled"
+			],
+			"defaultValue": "Enabled",
+			"metadata": {
+				"description": "Enable or disable Transparent Data Encryption (TDE) for the database."
+			}
+		},
+		"location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "Location for all resources."
+			}
+		},
+		"sqlServerName": {
+			"defaultValue": "",
+			"type": "String",
+			"metadata": {
+				"description": "Name of the Azure SQL Managed Instance - must be globally unique, contain only lowercase letters, numbers and '-'"
+			}
+		},
+		"databaseName": {
+			"defaultValue": "",
+			"type": "String",
+			"metadata": {
+				"description": "Name of the first database to be created on Managed Instance"
+			}
+		},
+		"databaseEdition": {
+			"defaultValue": "Basic",
+			"allowedValues": [
+				"Basic",
+				"GeneralPurpose"
+			],
+			"type": "String",
+			"metadata": {
+				"description": "Database Edition"
+			}
+		},
+		"databaseCollation": {
+			"defaultValue": "SQL_Latin1_General_CP1_CI_AS",
+			"type": "String",
+			"metadata": {
+				"description": "Name of the first database to be created on Managed Instance"
+			}
+		},
+		"skuName": {
+			"type": "string",
+			"allowedValues": [
+				"GP_Gen4",
+				"GP_Gen5",
+				"BC_Gen4",
+				"BC_Gen5"
+			],
+			"defaultValue": "GP_Gen4",
+			"metadata": {
+				"description": "Enter sku name."
+			}
+		},
+		"storageSizeInGB": {
+			"type": "int",
+			"defaultValue": 256,
+			"minValue": 32,
+			"maxValue": 8192,
+			"metadata": {
+				"description": "Enter storage size."
+			}
+		},
+		"vCores": {
+			"type": "int",
+			"defaultValue": 16,
+			"allowedValues": [
+				8,
+				16,
+				24,
+				32,
+				40,
+				64,
+				80
+			],
+			"metadata": {
+				"description": "Enter number of vCores."
+			}
+		},
+		"licenseType": {
+			"type": "string",
+			"defaultValue": "LicenseIncluded",
+			"allowedValues": [
+				"BasePrice",
+				"LicenseIncluded"
+			],
+			"metadata": {
+				"description": "Enter license type."
+			}
+		},
+		"managedInstanceSubnetName": {
+            "defaultValue": "DEV-BE",
+            "type": "String",
+            "metadata": {
+                "description": "Managed Instance Subnet name"
+            }
+        },
+		"managedInstanceSubnetAddressRange": {
+            "defaultValue": "10.213.42.0/24",
+            "type": "String",
+            "metadata": {
+                "description": "Managed Instance Subnet range"
+            }
+        },
+		"vnetResourceName": {
+            "defaultValue": "AZUG-VA-OIR-VNT001",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the vnet"
+            }
+        },
+		"vnetAddressRange": {
+            "defaultValue": "10.213.40.0/21",
+            "type": "String",
+            "metadata": {
+                "description": "Address range for the virtual network in CIDR notation"
+            }
+        }
+	},
+	"resources": [{
+		"name": "[parameters('sqlServerName')]",
+		"type": "Microsoft.Sql/servers",
+		"apiVersion": "2014-04-01-preview",
+		"location": "[parameters('location')]",
+		"tags": {
+			"displayName": "SqlServer"
+		},
+		"properties": {
+			"administratorLogin": "[parameters('sqlAdministratorLogin')]",
+			"administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+			"version": "12.0"
+		},
+		"resources": [{
+				"type": "Microsoft.Sql/managedInstances",
+				"apiVersion": "2015-05-01-preview",
+				"identity": {
+					"type": "SystemAssigned"
+				},
+				"location": "[parameters('location')]",
+				"name": "[parameters('databaseName')]",
+				"sku": {
+					"name": "[parameters('skuName')]"
+				},
+				"dependsOn": [
+					"[parameters('sqlServerName')]"
+				],
+				"properties": {
+					"administratorLogin": "[parameters('sqlAdministratorLogin')]",
+					"administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+					"storageSizeInGB": "[parameters('storageSizeInGB')]",
+					"vCores": "[parameters('vCores')]",
+					"licenseType": "[parameters('licenseType')]",
+					"subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('vnetResourceName'),parameters('managedInstanceSubnetName'))]"
+				}
+		}]		
+	}],
+	"outputs": {
+		"sqlServerFqdn": {
+			"type": "string",
+			"value": "[reference(concat('Microsoft.Sql/servers/', parameters('sqlServerName'))).fullyQualifiedDomainName]"
+		},
+		"databaseName": {
+			"type": "string",
+			"value": "[parameters('databaseName')]"
+		}
+	}
+}

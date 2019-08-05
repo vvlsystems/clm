@@ -60,17 +60,6 @@
 				"description": "Enter license type."
 			}
 		},
-		"readScale": {
-			"type": "string",
-			"defaultValue": "Disabled",
-			"allowedValues": [
-				"Enabled",
-				"Disabled"
-			],
-			"metadata": {
-				"description": "The read scale option to assign to the Azure SQL Database."
-			}
-		},
 		"retentionDays": {
 			"type": "int",
 			"defaultValue": 7,
@@ -104,7 +93,6 @@
 		"skuName": {
 			"type": "string",
 			"allowedValues": [
-				"GP_S_Gen5_1",
 				"GP_Gen5_2",
 				"GP_Gen5_4",
 				"GP_Gen5_6",
@@ -113,12 +101,12 @@
 				"GP_Gen5_12",
 				"GP_Gen5_14"
 			],
-			"defaultValue": "GP_S_Gen5_1",
+			"defaultValue": "GP_Gen5_2",
 			"metadata": {
 				"description": "Enter General Purpose size"
 			}
 		},
-		"skuTier": {
+		"computeModel": {
 			"type": "string",
 			"allowedValues": [
 				"Provisioned",
@@ -126,7 +114,7 @@
 			],
 			"defaultValue": "Provisioned",
 			"metadata": {
-				"description": "Enter the Compute Tier for your database server"
+				"description": "Enter the Compute Model for your database server"
 			}
 		},
 		"storageSizeInGB": {
@@ -173,21 +161,22 @@
 				},
 				"sku": {
 					"name": "[parameters('skuName')]",
-					"tier": "[parameters('skuTier')]"
+					"tier": "[parameters('databaseEdition')]"
 				},
 				"properties": {
 					"edition": "[parameters('databaseEdition')]",
 					"collation": "[parameters('databaseCollation')]",
 					"storageSizeInGB": "[parameters('storageSizeInGB')]",
 					"licenseType": "[parameters('licenseType')]",
-					"autoPauseDelay": "[parameters('autoPauseDelay')]"
+					"autoPauseDelay": "[parameters('autoPauseDelay')]",
+					"computeModel": "[parameters('computeModel')]"
 				},
 				"dependsOn": [
 					"[parameters('sqlServerName')]"
 				],
 				"resources": [
 					{
-						"name": "tde",
+						"name": "current",
 						"comments": "Transparent Data Encryption",
 						"type": "transparentDataEncryption",
 						"apiVersion": "2014-04-01-preview",
@@ -199,15 +188,16 @@
 						]
 					},
 					{
-						"name": "backup",
+						"name": "default",
 						"comments": "Backup Retention Policy",
 						"type": "backupShortTermRetentionPolicies",
 						"apiVersion": "2017-10-01-preview",
 						"properties": {
 							"retentionDays": "[parameters('retentionDays')]"
 						},
-							"dependsOn": [
-							"[parameters('databaseName')]"
+						"dependsOn": [
+							"[parameters('databaseName')]",
+							"current"
 						]
 					}				
 				]

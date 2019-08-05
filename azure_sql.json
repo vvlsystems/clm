@@ -32,6 +32,28 @@
 				"description": "Location for all resources."
 			}
 		},
+		"licenseType": {
+			"type": "string",
+			"defaultValue": "LicenseIncluded",
+			"allowedValues": [
+				"BasePrice",
+				"LicenseIncluded"
+			],
+			"metadata": {
+				"description": "Enter license type."
+			}
+		},
+		"readScale": {
+			"type": "string",
+			"defaultValue": "Disabled",
+			"allowedValues": [
+				"Enabled",
+				"Disabled"
+			],
+			"metadata": {
+				"description": "The read scale option to assign to the Azure SQL Database."
+			}
+		}
 		"sqlServerName": {
 			"defaultValue": "",
 			"type": "String",
@@ -49,13 +71,27 @@
 		"databaseEdition": {
 			"defaultValue": "Basic",
 			"allowedValues": [
-				"Basic"
+				"GeneralPurpose",
+				"BusinessCritical"
 			],
 			"type": "String",
 			"metadata": {
 				"description": "Database Edition"
 			}
 		},
+		"skuName": {
+			"type": "string",
+			"allowedValues": [
+				"GP_Gen4",
+				"GP_Gen5",
+				"BC_Gen4",
+				"BC_Gen5"
+			],
+			"defaultValue": "GP_Gen4",
+			"metadata": {
+				"description": "Enter SKU name."
+			}
+		}
 		"databaseCollation": {
 			"defaultValue": "SQL_Latin1_General_CP1_CI_AS",
 			"type": "String",
@@ -63,16 +99,32 @@
 				"description": "Name of the first database to be created on Managed Instance"
 			}
 		},
-		"databaseServiceObjectiveName": {
-			"defaultValue": "Basic",
-			"allowedValues": [
-				"Basic"
-			],
-			"type": "String",
+		"storageSizeInGB": {
+			"type": "int",
+			"defaultValue": 256,
+			"minValue": 32,
+			"maxValue": 8192,
 			"metadata": {
-				"description": "Database Service Objective Name"
+				"description": "Enter storage size."
 			}
-		}
+		},
+		"vCores": {
+			"type": "int",
+			"defaultValue": 1,
+			"allowedValues": [
+				1,
+				8,
+				16,
+				24,
+				32,
+				40,
+				64,
+				80
+			],
+			"metadata": {
+				"description": "Enter number of vCores."
+			}
+		},
 	},
 	"resources": [{
 		"name": "[parameters('sqlServerName')]",
@@ -95,10 +147,16 @@
 				"tags": {
 					"displayName": "Database"
 				},
+				"sku": {
+					"name": "[parameters('skuName')]"
+				}
 				"properties": {
 					"edition": "[parameters('databaseEdition')]",
 					"collation": "[parameters('databaseCollation')]",
-					"requestedServiceObjectiveName": "[parameters('databaseServiceObjectiveName')]"
+					"storageSizeInGB": "[parameters('storageSizeInGB')]",
+					"vCores": "[parameters('vCores')]",
+					"licenseType": "[parameters('licenseType')]",
+					"readScale": "[parameters('readScale')]
 				},
 				"dependsOn": [
 					"[parameters('sqlServerName')]"

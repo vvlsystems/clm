@@ -42,6 +42,27 @@
 				"description": "Database Edition"
 			}
 		},
+		"firewallStartIp": {
+			"defaultValue": "0.0.0.0",
+			"type": "String",
+			"metadata": {
+				"description": "Start IP range to allow connectivity to SQL database"
+			}
+		},
+		"firewallEndIp": {
+			"defaultValue": "0.0.0.0",
+			"type": "String",
+			"metadata": {
+				"description": "End IP range to allow connectivity to SQL database"
+			}
+		},
+		"firewallRuleName": {
+			"defaultValue": "AgCloudFirewallRule",
+			"type": "String",
+			"metadata": {
+				"description": "Provide a name for your firewall rule"
+			}
+		},
 		"location": {
 			"type": "string",
 			"defaultValue": "[resourceGroup().location]",
@@ -109,8 +130,7 @@
 		"computeModel": {
 			"type": "string",
 			"allowedValues": [
-				"Provisioned",
-				"Serverless"
+				"Provisioned"
 			],
 			"defaultValue": "Provisioned",
 			"metadata": {
@@ -151,13 +171,14 @@
 			"administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
 			"version": "12.0"
 		},
-		"resources": [{
+		"resources": [
+			{
 				"name": "[parameters('databaseName')]",
 				"type": "databases",
 				"apiVersion": "2017-10-01-preview",
 				"location": "[parameters('location')]",
 				"tags": {
-					"displayName": "Database"
+					"CLM Agreement": "OIR0101"
 				},
 				"sku": {
 					"name": "[parameters('skuName')]",
@@ -203,13 +224,13 @@
 				]
 			},
 			{
-				"name": "AllowAllMicrosoftAzureIps",
+				"name": "[parameters('firewallRuleName')]",
 				"type": "firewallrules",
 				"apiVersion": "2014-04-01",
 				"location": "[parameters('location')]",
 				"properties": {
-					"endIpAddress": "0.0.0.0",
-					"startIpAddress": "0.0.0.0"
+					"endIpAddress": "[parameters('firewallStartIp')]",
+					"startIpAddress": "[parameters('firewallEndIp')]"
 				},
 				"dependsOn": [
 					"[parameters('sqlServerName')]"

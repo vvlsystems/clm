@@ -2,19 +2,6 @@
 	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
-		"autoPauseDelay": {
-			"defaultValue": -1,
-			"type": "int",
-			"allowedValues": [
-				-1,
-				60,
-				120,
-				240
-			],
-			"metadata": {
-				"description": "Time in minutes after which database is automatically paused. A value of -1 means that automatic pause is disabled"
-			}
-		},
 		"databaseCollation": {
 			"defaultValue": "SQL_Latin1_General_CP1_CI_AS",
 			"type": "String",
@@ -189,7 +176,6 @@
 					"collation": "[parameters('databaseCollation')]",
 					"storageSizeInGB": "[parameters('storageSizeInGB')]",
 					"licenseType": "[parameters('licenseType')]",
-					"autoPauseDelay": "[parameters('autoPauseDelay')]",
 					"computeModel": "[parameters('computeModel')]"
 				},
 				"dependsOn": [

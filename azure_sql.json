@@ -26,7 +26,7 @@
 			}
 		},
 		"databaseName": {
-			"defaultValue": "",
+			"defaultValue": "[concat('agcloud-', uniqueString(resourceGroup().id, deployment().name))]",
 			"type": "String",
 			"metadata": {
 				"description": "Name of the first database to be created."

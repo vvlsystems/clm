@@ -26,7 +26,7 @@
 			}
 		},
 		"databaseName": {
-			"defaultValue": "[concat('agcloud-', uniqueString(resourceGroup().id, deployment().name))]",
+			"defaultValue": "",
 			"type": "String",
 			"metadata": {
 				"description": "Name of the first database to be created."
@@ -105,7 +105,7 @@
 			}
 		},
 		"sqlServerName": {
-			"defaultValue": "",
+			"defaultValue": "[concat('agcloud-', uniqueString(resourceGroup().id, deployment().name))]",
 			"type": "String",
 			"metadata": {
 				"description": "Name of the Azure SQL Managed Instance - must be globally unique, contain only lowercase letters, numbers and '-'"

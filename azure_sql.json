@@ -2,6 +2,16 @@
 	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
+		"computeModel": {
+			"type": "string",
+			"allowedValues": [
+				"Provisioned"
+			],
+			"defaultValue": "Provisioned",
+			"metadata": {
+				"description": "Enter the Compute Model for your database server"
+			}
+		},
 		"databaseCollation": {
 			"defaultValue": "SQL_Latin1_General_CP1_CI_AS",
 			"type": "String",
@@ -114,23 +124,13 @@
 				"description": "Enter General Purpose size"
 			}
 		},
-		"computeModel": {
-			"type": "string",
-			"allowedValues": [
-				"Provisioned"
-			],
-			"defaultValue": "Provisioned",
-			"metadata": {
-				"description": "Enter the Compute Model for your database server"
-			}
-		},
 		"storageSizeInGB": {
-			"type": "int",
-			"defaultValue": 32,
-			"minValue": 32,
-			"maxValue": 8192,
+			"type": "string",
+			"defaultValue": "32",
+			"minValue": "32",
+			"maxValue": "8192",
 			"metadata": {
-				"description": "Enter storage size."
+				"description": "Enter storage size in GB."
 			}
 		},
 		"transparentDataEncryption": {

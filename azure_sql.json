@@ -126,9 +126,9 @@
 		},
 		"storageSizeInGB": {
 			"type": "int",
-			"defaultValue": "32",
-			"minValue": "32",
-			"maxValue": "8192",
+			"defaultValue": 32,
+			"minValue": 32,
+			"maxValue": 8192,
 			"metadata": {
 				"description": "Enter storage size in GB."
 			}

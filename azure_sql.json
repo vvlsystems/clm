@@ -125,7 +125,7 @@
 			}
 		},
 		"storageSizeInGB": {
-			"type": "string",
+			"type": "int",
 			"defaultValue": "32",
 			"minValue": "32",
 			"maxValue": "8192",

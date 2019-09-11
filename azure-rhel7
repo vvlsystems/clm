@@ -3,7 +3,15 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
-            "type": "string"
+            "type": "string",
+            "allowedValues": [
+				"usgovvirginia",
+                "usgovtexas"
+			],
+			"defaultValue": "usgovvirginia",
+			"metadata": {
+				"description": "Select the region"
+			}
         },
         "networkInterfaceName": {
             "type": "string"
